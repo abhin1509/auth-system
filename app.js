@@ -47,6 +47,10 @@ app.post("/register", async (req, res) => {
     user.token = token;
     // update or not in db
 
+    //handling password situtation(where we are sending enc password)
+    user.password = undefined;
+    // we are setting undefined after receiving from db, not that will be undefied
+
     res.status(201).json(user); // here we are also sending the enc password
   } catch (error) {
     console.log(error);
