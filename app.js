@@ -58,4 +58,38 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!(email && password)) {
+      res.status(400).send("All fields are mandatory");
+    }
+
+    const user = await User.findOne({ email });
+
+    // if(!user) {  // prevent sending pass in user.password from mongoose
+    //   res.status(400).send("You are not registered");
+    // }
+
+    const passMatched = await bcrypt.compare(password, user.password);
+
+    if (user && passMatched) {
+      const token = jwt.sign({ user_id: user._id }, privateKey, {
+        expiresIn: "2h",
+      });
+      user.token = token;
+      user.password = undefined;
+      return res.status(200).json(user);
+    }
+    res.status(400).send("email or password is incorrect");
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("/dashboard", (req, res) => {
+  res.status(200).send("welcome to dashboard");
+});
+
 module.exports = app;
