@@ -45,13 +45,14 @@ app.post("/register", async (req, res) => {
       expiresIn: "2h",
     });
     user.token = token;
-    // update or not in db
+    // update or not in db - choice
 
     //handling password situtation(where we are sending enc password)
     user.password = undefined;
-    // we are setting undefined after receiving from db, not that will be undefied
+    // we are setting undefined after receiving from db
 
-    res.status(201).json(user); // here we are also sending the enc password
+    //send token if you want to start app just after reg or send success and redirect - choice
+    res.status(201).json(user); // Now password will be undefiened
   } catch (error) {
     console.log(error);
   }
