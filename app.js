@@ -4,6 +4,7 @@ require("./config/database").connect();
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const isloggedIn = require("./middleware/auth");
 
 const app = express();
 
@@ -88,7 +89,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/dashboard", (req, res) => {
+app.get("/dashboard", isloggedIn, (req, res) => {
   res.status(200).send("welcome to dashboard");
 });
 
