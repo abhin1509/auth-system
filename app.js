@@ -4,11 +4,13 @@ require("./config/database").connect();
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const isloggedIn = require("./middleware/auth");
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 const User = require("./model/user");
 const privateKey = process.env.SECRET_KEY;
@@ -81,7 +83,19 @@ app.post("/login", async (req, res) => {
       });
       user.token = token;
       user.password = undefined;
-      return res.status(200).json(user);
+      // return res.status(200).json(user);
+
+      // If we want to send token in cookie instead of json
+      const millisecondsInThreeDays = 3 * 24 * 60 * 60 * 1000;
+      const options = {
+        expires: new Date(Date.now() + millisecondsInThreeDays),
+        httpOnly: true,
+      };
+      return res
+        .status(200)
+        .cookie("token", token, options)
+        .json({ success: true, user });
+      //TODO: expiration of cookies and tokens
     }
     res.status(400).send("email or password is incorrect");
   } catch (error) {
